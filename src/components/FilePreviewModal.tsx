@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { OfficeFile } from '../types';
 import { getFileCategory, formatBytes, isPrintable } from '../utils/formatters';
 import { printRemoteFile } from '../utils/printHelper';
+import { downloadFileInstantly } from '../utils/downloadHelper';
 import { X, Download, Printer, Trash2, ExternalLink, FileText, Copy, Check } from 'lucide-react';
 
 interface FilePreviewModalProps {
@@ -24,6 +25,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({ file, onClos
   const [textContent, setTextContent] = useState<string | null>(null);
   const [loadingText, setLoadingText] = useState(false);
   const [copiedText, setCopiedText] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   useEffect(() => {
     if (isText && fileUrl) {
@@ -47,15 +49,9 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({ file, onClos
     }
   };
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     if (!fileUrl) return;
-    const a = document.createElement('a');
-    a.href = fileUrl;
-    a.download = file.file_name;
-    a.target = '_blank';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    await downloadFileInstantly(fileUrl, file.file_name, setIsDownloading);
   };
 
   const handleCopyText = async () => {
@@ -102,9 +98,15 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({ file, onClos
               </button>
             )}
 
-            <button className="btn btn-secondary btn-sm" onClick={handleDownload} title="Download" aria-label="Download">
+            <button
+              className="btn btn-secondary btn-sm"
+              onClick={handleDownload}
+              disabled={isDownloading}
+              title="Download file instantly"
+              aria-label="Download"
+            >
               <Download size={14} />
-              <span className="hide-mobile">Download</span>
+              <span className="hide-mobile">{isDownloading ? 'Downloading...' : 'Download'}</span>
             </button>
 
             {printable && (

@@ -3,6 +3,7 @@ import JSZip from 'jszip';
 import { OfficeFile, SenderBatch } from '../types';
 import { formatBytes, formatTimeAgo, getFileCategory, isPrintable } from '../utils/formatters';
 import { printRemoteFile } from '../utils/printHelper';
+import { downloadFileInstantly } from '../utils/downloadHelper';
 import {
   Download,
   Printer,
@@ -53,6 +54,7 @@ export const ReceiverDashboard: React.FC<ReceiverDashboardProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [downloadingZipSender, setDownloadingZipSender] = useState<string | null>(null);
+  const [downloadingFileId, setDownloadingFileId] = useState<string | null>(null);
   const [printingId, setPrintingId] = useState<string | null>(null);
 
   // Group files by Sender Name (and time batch)
@@ -149,16 +151,12 @@ export const ReceiverDashboard: React.FC<ReceiverDashboardProps> = ({
     }
   };
 
-  // Handle Direct Download of single file
-  const handleDownload = (file: OfficeFile) => {
+  // Handle Instant Direct Download of single file
+  const handleDownload = async (file: OfficeFile) => {
     if (!file.public_url) return;
-    const a = document.createElement('a');
-    a.href = file.public_url;
-    a.download = file.file_name;
-    a.target = '_blank';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    await downloadFileInstantly(file.public_url, file.file_name, (isDownloading) => {
+      setDownloadingFileId(isDownloading ? file.id : null);
+    });
   };
 
   return (
@@ -535,10 +533,11 @@ export const ReceiverDashboard: React.FC<ReceiverDashboardProps> = ({
                           <button
                             className="btn btn-secondary btn-sm"
                             onClick={() => handleDownload(file)}
-                            title="Download file"
+                            disabled={downloadingFileId === file.id}
+                            title="Download file instantly"
                           >
                             <Download size={14} />
-                            <span>Download</span>
+                            <span>{downloadingFileId === file.id ? 'Downloading...' : 'Download'}</span>
                           </button>
 
                           {isAuthenticated && (

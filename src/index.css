@@ -93,6 +93,7 @@ button, input, select, textarea {
   padding: 16px 28px;
   border-bottom: 1px solid var(--border-subtle);
   background: rgba(10, 13, 20, 0.85);
+  -webkit-backdrop-filter: blur(16px);
   backdrop-filter: blur(16px);
   position: sticky;
   top: 0;
@@ -126,6 +127,7 @@ button, input, select, textarea {
   letter-spacing: -0.02em;
   background: linear-gradient(to right, #fff, #cbd5e1);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
@@ -701,6 +703,7 @@ button, input, select, textarea {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.75);
+  -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
@@ -891,6 +894,7 @@ button, input, select, textarea {
   z-index: 1000;
   font-size: 0.88rem;
   font-weight: 500;
+  -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
   display: flex;
   align-items: center;
@@ -1138,6 +1142,7 @@ body {
   padding: 18px 20px calc(18px + env(safe-area-inset-bottom, 0px));
   border-top: 1px solid rgba(255, 255, 255, 0.04);
   margin-top: auto;
+  -webkit-user-select: none;
   user-select: none;
 }
 
