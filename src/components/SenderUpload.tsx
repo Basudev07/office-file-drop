@@ -77,7 +77,7 @@ export const SenderUpload: React.FC = () => {
                 }}
               >
                 <UploadCloud size={16} />
-                <span>Upload Files & Photos</span>
+                <span>Upload Files</span>
               </button>
 
               <button

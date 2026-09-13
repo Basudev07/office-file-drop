@@ -30,25 +30,46 @@ export const RawTextEditor: React.FC<RawTextEditorProps> = ({
 
   return (
     <div className="raw-text-container">
-      <div className="input-group" style={{ marginBottom: '10px' }}>
-        <label className="input-label" style={{ justifyContent: 'space-between' }}>
-          <span>Note / Code Title (Optional)</span>
-          <span style={{ fontSize: '0.74rem', color: 'var(--text-dim)' }}>Preserves 100% exact format</span>
-        </label>
+      {/* Top Header Row: Compact Title & Quick Action Buttons */}
+      <div className="raw-text-header-row">
         <input
           type="text"
-          className="input-field"
-          placeholder="e.g. Server Credentials, SQL Query, Meeting Notes, WiFi Password"
+          className="input-field raw-title-input"
+          placeholder="Note / Code Title (Optional)..."
           value={textTitle}
           onChange={(e) => onTextTitleChange(e.target.value)}
           disabled={isUploading}
         />
+
+        <div className="raw-header-actions">
+          <button
+            type="button"
+            className="btn btn-secondary btn-xs"
+            onClick={onPasteClipboard}
+            title="Paste from clipboard"
+          >
+            <ClipboardCopy size={13} />
+            <span>Paste</span>
+          </button>
+
+          {rawText && (
+            <button
+              type="button"
+              className="btn btn-secondary btn-xs btn-clear-text"
+              onClick={() => onRawTextChange('')}
+              title="Clear text"
+            >
+              <Trash2 size={13} />
+            </button>
+          )}
+        </div>
       </div>
 
-      <div style={{ position: 'relative' }}>
+      {/* Textarea filling flexible height */}
+      <div className="raw-textarea-wrap">
         <textarea
           className="raw-textarea"
-          placeholder="Type or paste any text or code here...&#10;&#10;Exact indentation, spacing, tabs, line breaks, code snippets, emojis, and symbols are preserved without alteration."
+          placeholder="Type or paste any text or code here... Exact spacing, line breaks, tabs, and indentation are preserved."
           value={rawText}
           onChange={(e) => onRawTextChange(e.target.value)}
           disabled={isUploading}
@@ -56,74 +77,46 @@ export const RawTextEditor: React.FC<RawTextEditorProps> = ({
         />
       </div>
 
-      {/* Toolbar: Counters & Quick Actions */}
-      <div className="raw-text-toolbar">
+      {/* Bottom Bar: Stats on left, Send & Queue actions on right */}
+      <div className="raw-text-bottom-bar">
         <div className="raw-text-stats">
           <span>{rawText.length.toLocaleString()} chars</span>
           <span>•</span>
-          <span>{lineCount} lines</span>
-          <span>•</span>
-          <span>{formatBytes(byteSize)}</span>
+          <span>{lineCount} {lineCount === 1 ? 'line' : 'lines'}</span>
+          <span className="hide-mobile">•</span>
+          <span className="hide-mobile">{formatBytes(byteSize)}</span>
         </div>
 
-        <div style={{ display: 'flex', gap: '6px' }}>
+        <div className="raw-text-actions">
           <button
             type="button"
-            className="btn btn-secondary btn-sm touch-target"
-            onClick={onPasteClipboard}
-            title="Paste from clipboard"
+            className="btn btn-secondary btn-raw-queue"
+            onClick={onAddTextToQueue}
+            disabled={isUploading || !rawText.trim()}
+            title="Add note to file queue"
           >
-            <ClipboardCopy size={14} />
-            <span>Paste Clipboard</span>
+            <Plus size={13} />
+            <span className="hide-mobile">Add to Queue</span>
+            <span className="show-mobile-inline">Queue</span>
           </button>
 
-          {rawText && (
-            <button
-              type="button"
-              className="btn btn-secondary btn-sm touch-target"
-              onClick={() => onRawTextChange('')}
-              title="Clear text"
-            >
-              <Trash2 size={14} />
-              <span>Clear</span>
-            </button>
-          )}
+          <button
+            type="button"
+            className="btn btn-primary btn-raw-send"
+            onClick={onUploadRawText}
+            disabled={isUploading || !rawText.trim()}
+          >
+            {isUploading ? (
+              <span>Dropping to {deskTitle}...</span>
+            ) : (
+              <>
+                <Send size={13} />
+                <span className="hide-mobile">Drop Raw Text Now</span>
+                <span className="show-mobile-inline">Drop Text</span>
+              </>
+            )}
+          </button>
         </div>
-      </div>
-
-      {/* Action Buttons */}
-      <div className="raw-text-actions">
-        <button
-          type="button"
-          className="btn btn-primary btn-upload-main"
-          onClick={onUploadRawText}
-          disabled={isUploading || !rawText.trim()}
-          style={{ flex: 1 }}
-        >
-          {isUploading ? (
-            <>
-              <div className="status-dot" style={{ backgroundColor: '#fff' }} />
-              <span>Dropping Text to {deskTitle}...</span>
-            </>
-          ) : (
-            <>
-              <Send size={16} />
-              <span>Drop Raw Text Now</span>
-            </>
-          )}
-        </button>
-
-        <button
-          type="button"
-          className="btn btn-secondary"
-          style={{ minHeight: '48px', padding: '12px 16px' }}
-          onClick={onAddTextToQueue}
-          disabled={isUploading || !rawText.trim()}
-          title="Add this text note to file queue to drop alongside other files"
-        >
-          <Plus size={16} />
-          <span className="hide-mobile">Add to Queue</span>
-        </button>
       </div>
     </div>
   );
