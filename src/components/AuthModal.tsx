@@ -28,8 +28,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
         password,
       });
       if (error) throw error;
-      onAuthSuccess();
       onClose();
+      onAuthSuccess();
     } catch (err: unknown) {
       const error = err as { message?: string };
       setErrorMessage(error.message || 'Authentication failed. Please check your credentials.');

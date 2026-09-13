@@ -45,11 +45,11 @@ for insert
 to anon, authenticated
 with check (true);
 
--- Policy B: Anyone (receiver desk and senders) can read file metadata for live preview
-create policy "Allow select on office_files"
+-- Policy B: Only authenticated desk receiver can read all file metadata
+create policy "Allow authenticated select on office_files"
 on public.office_files
 for select
-to anon, authenticated
+to authenticated
 using (true);
 
 -- Policy C: Only authenticated admin/receiver can delete files from database

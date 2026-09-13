@@ -13,7 +13,7 @@ export const QRCodeModal: React.FC<QRCodeModalProps> = ({ isOpen, onClose }) => 
   const [copied, setCopied] = useState(false);
   const printRef = useRef<HTMLDivElement>(null);
 
-  const customUrl = `${window.location.origin}${window.location.pathname}#upload`;
+  const customUrl = `${window.location.origin}${window.location.pathname}#drop`;
 
   useEffect(() => {
     QRCode.toDataURL(customUrl, {

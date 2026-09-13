@@ -17,12 +17,12 @@ export interface SenderBatch {
   totalSize: number;
 }
 
-export interface UploadItem {
+export interface SelectedFileItem {
   id: string;
   file: File;
   progress: number;
-  status: 'idle' | 'uploading' | 'completed' | 'error';
+  status: 'pending' | 'uploading' | 'completed' | 'error';
   errorMessage?: string;
 }
 
-export type AppView = 'receiver' | 'upload';
+export type AppView = 'drop' | 'station';

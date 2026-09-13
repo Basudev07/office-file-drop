@@ -1,5 +1,5 @@
 import React from 'react';
-import { Share2, QrCode, Lock, LogOut, UploadCloud, LayoutDashboard } from 'lucide-react';
+import { Share2, QrCode, LogOut, UploadCloud, LayoutDashboard } from 'lucide-react';
 import { AppView } from '../types';
 
 interface NavbarProps {
@@ -21,81 +21,66 @@ export const Navbar: React.FC<NavbarProps> = ({
   onSignOut,
   realtimeConnected,
 }) => {
-  // Unauthenticated users are strictly senders
-  const isSender = !isAuthenticated;
+  // Triple-click on logo allows desk owner to open auth modal discreetly if not signed in
+  const [logoClickCount, setLogoClickCount] = React.useState(0);
+
+  const handleBrandClick = () => {
+    if (isAuthenticated) {
+      onNavigate('station');
+    } else {
+      const newCount = logoClickCount + 1;
+      setLogoClickCount(newCount);
+      if (newCount >= 3) {
+        setLogoClickCount(0);
+        onOpenAuth();
+      } else {
+        setTimeout(() => setLogoClickCount(0), 1500);
+      }
+    }
+  };
 
   return (
     <header className="navbar">
       <div
         className="nav-brand"
         role="button"
-        onClick={() => {
-          if (isAuthenticated) {
-            onNavigate('receiver');
-          }
-        }}
+        tabIndex={0}
+        onClick={handleBrandClick}
         style={{ cursor: isAuthenticated ? 'pointer' : 'default' }}
+        title={isAuthenticated ? 'Go to Station' : 'Office File Drop'}
       >
         <div className="brand-icon">
           <Share2 size={22} />
         </div>
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span className="brand-title">Office File Drop</span>
-            <span className="nav-badge">{isSender ? 'Drop' : 'Station'}</span>
-          </div>
+        <div className="brand-text-wrap">
+          <span className="brand-title">Office File Drop</span>
+          <span className="nav-badge">{isAuthenticated && currentView === 'station' ? 'Station' : 'Drop'}</span>
         </div>
       </div>
 
       <div className="nav-actions">
         {/* Realtime Live Indicator */}
-        <div className="status-pill" title={realtimeConnected ? 'Connected to desk receiver' : 'Connecting...'}>
+        <div
+          className="status-pill"
+          title={realtimeConnected ? 'Connected to desk receiver' : 'Connecting...'}
+        >
           <span
             className="status-dot"
             style={{ backgroundColor: realtimeConnected ? 'var(--accent-emerald)' : 'var(--accent-amber)' }}
-          ></span>
-          <span style={{ fontSize: '0.8rem' }} className="hide-mobile">
+          />
+          <span className="status-label hide-mobile">
             {realtimeConnected ? 'Live' : 'Connecting'}
           </span>
         </div>
 
-        {/* Sender Mode: Clean, zero-clutter navigation - NO receiver switcher or QR button */}
-        {isSender ? (
-          <button
-            className="btn btn-secondary btn-sm"
-            onClick={onOpenAuth}
-            title="Desk Owner Sign In"
-            aria-label="Desk Owner Sign In"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              padding: '6px 12px',
-              fontSize: '0.8rem',
-              borderRadius: 'var(--radius-full)',
-              background: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid rgba(255, 255, 255, 0.12)',
-              color: 'var(--text-muted)',
-            }}
-          >
-            <Lock size={13} />
-            <span className="hide-mobile">Desk Owner</span>
-          </button>
-        ) : (
-          /* Receiver / Desk Owner Mode: Full Station Controls */
+        {/* Receiver Desk Owner Mode: Full Station Controls */}
+        {isAuthenticated ? (
           <>
-            <div
-              style={{
-                display: 'flex',
-                background: 'rgba(255, 255, 255, 0.05)',
-                padding: '3px',
-                borderRadius: 'var(--radius-md)',
-                gap: '3px',
-              }}
-            >
+            <div className="view-mode-toggle">
               <button
-                className={`btn btn-sm ${currentView === 'receiver' ? 'btn-primary' : 'btn-secondary'}`}
-                onClick={() => onNavigate('receiver')}
+                type="button"
+                className={`btn btn-sm ${currentView === 'station' ? 'btn-primary' : 'btn-secondary'}`}
+                onClick={() => onNavigate('station')}
                 title="Receiver Dashboard"
                 aria-label="Receiver Dashboard"
               >
@@ -103,21 +88,23 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <span className="hide-mobile">Station</span>
               </button>
               <button
-                className={`btn btn-sm ${currentView === 'upload' ? 'btn-primary' : 'btn-secondary'}`}
-                onClick={() => onNavigate('upload')}
+                type="button"
+                className={`btn btn-sm ${currentView === 'drop' ? 'btn-primary' : 'btn-secondary'}`}
+                onClick={() => onNavigate('drop')}
                 title="Sender Drop Page"
                 aria-label="Sender Drop Page"
               >
                 <UploadCloud size={15} />
-                <span className="hide-mobile">Drop Page</span>
+                <span className="hide-mobile">Drop</span>
               </button>
             </div>
 
-            {/* QR Code Standee Button (Only visible to authenticated desk owner) */}
+            {/* QR Code Standee Button */}
             <button
+              type="button"
               className="btn btn-secondary btn-sm"
               onClick={onOpenQR}
-              title="View & Print Desk QR Code Standee"
+              title="Print Desk QR Code Standee"
               aria-label="Desk QR"
             >
               <QrCode size={15} />
@@ -126,17 +113,31 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             {/* Sign Out Button */}
             <button
+              type="button"
               className="btn btn-secondary btn-sm"
               onClick={onSignOut}
-              title="Sign Out of Receiver Mode"
+              title="Sign Out of Receiver Station"
               aria-label="Sign Out"
             >
               <LogOut size={15} />
               <span className="hide-mobile">Sign Out</span>
             </button>
           </>
+        ) : (
+          /* Sender Mode: Clean, zero-clutter navigation - NO receiver switcher or QR button */
+          <button
+            type="button"
+            className="btn btn-secondary btn-sm desk-owner-subtle-btn"
+            onClick={onOpenAuth}
+            title="Desk Owner Portal"
+            aria-label="Desk Owner Portal"
+          >
+            <span className="hide-mobile">Desk Owner</span>
+          </button>
         )}
       </div>
     </header>
   );
 };
+
+export default Navbar;

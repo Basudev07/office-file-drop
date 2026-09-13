@@ -14,8 +14,8 @@
 
 ## ✨ Features
 
-- **Sender Direct Landing (`/upload`)**:
-  Colleagues scanning your desk QR standee or opening your link land directly on the sleek Drop Page. They never see receiver controls, admin switchers, or other colleagues' files.
+- **Sender Direct Landing (`/#drop`)**:
+  Colleagues scanning your desk QR standee or opening your link land strictly on the isolated Drop Page. They cannot access receiver station controls, admin switchers, or other colleagues' files.
 
 - **Instant Direct Downloads**:
   Clicking "Download" fetches the file blob client-side and triggers an instant native download directly to your device's Downloads folder (no unwanted new tabs).
