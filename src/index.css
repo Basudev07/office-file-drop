@@ -1594,21 +1594,59 @@ body {
   color: var(--accent-rose);
 }
 
-/* Subtle Desk Owner Button in Navbar */
-.desk-owner-subtle-btn {
+/* Minimal & Pretty Desk Owner Button */
+.desk-owner-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  height: 34px;
+  padding: 0 13px;
   border-radius: var(--radius-full);
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  color: var(--text-dim);
+  color: var(--text-muted);
   font-size: 0.78rem;
-  padding: 6px 14px;
+  font-weight: 500;
+  cursor: pointer;
   transition: all var(--transition-fast);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
 }
 
-.desk-owner-subtle-btn:hover {
-  color: var(--text-muted);
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.18);
+.desk-owner-btn:hover {
+  background: rgba(99, 102, 241, 0.12);
+  border-color: rgba(99, 102, 241, 0.35);
+  color: var(--primary-light);
+  box-shadow: 0 0 14px rgba(99, 102, 241, 0.2);
+  transform: translateY(-1px);
+}
+
+.desk-owner-btn:active {
+  transform: scale(0.95);
+}
+
+.desk-owner-icon {
+  color: currentColor;
+  flex-shrink: 0;
+  transition: transform var(--transition-fast);
+}
+
+.desk-owner-btn:hover .desk-owner-icon {
+  transform: scale(1.08);
+}
+
+/* Mobile Screen: Perfectly circular, sleek 32x32 icon button */
+@media (max-width: 640px) {
+  .desk-owner-btn {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
 }
 
 .brand-text-wrap {

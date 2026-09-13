@@ -1,5 +1,5 @@
 import React from 'react';
-import { Share2, QrCode, LogOut, UploadCloud, LayoutDashboard } from 'lucide-react';
+import { Share2, QrCode, LogOut, UploadCloud, LayoutDashboard, Lock } from 'lucide-react';
 import { AppView } from '../types';
 
 interface NavbarProps {
@@ -124,15 +124,16 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
           </>
         ) : (
-          /* Sender Mode: Clean, zero-clutter navigation - NO receiver switcher or QR button */
+          /* Sender Mode: Minimal & Pretty Desk Owner Button */
           <button
             type="button"
-            className="btn btn-secondary btn-sm desk-owner-subtle-btn"
+            className="desk-owner-btn"
             onClick={onOpenAuth}
             title="Desk Owner Portal"
             aria-label="Desk Owner Portal"
           >
-            <span className="hide-mobile">Desk Owner</span>
+            <Lock size={14} className="desk-owner-icon" />
+            <span className="desk-owner-label hide-mobile">Desk Owner</span>
           </button>
         )}
       </div>
