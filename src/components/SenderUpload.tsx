@@ -32,6 +32,7 @@ export const SenderUpload: React.FC = () => {
   } = useFileUploader();
 
   const deskTitle = localStorage.getItem('office_drop_desk_title') || "Receiver's Desk";
+  const [animationDirection, setAnimationDirection] = React.useState<'left' | 'right'>('right');
 
   return (
     <div className="sender-page-wrapper">
@@ -57,12 +58,23 @@ export const SenderUpload: React.FC = () => {
           <TransferSuccess deskTitle={deskTitle} onReset={resetAll} />
         ) : (
           <>
-            {/* Mode Switcher Tabs */}
+            {/* Fluid Mode Switcher Tabs */}
             <div className="upload-mode-switcher">
+              <div
+                className="mode-switcher-indicator"
+                style={{
+                  transform: uploadMode === 'files' ? 'translateX(0%)' : 'translateX(100%)',
+                }}
+              />
               <button
                 type="button"
                 className={`mode-tab touch-target ${uploadMode === 'files' ? 'active' : ''}`}
-                onClick={() => setUploadMode('files')}
+                onClick={() => {
+                  if (uploadMode !== 'files') {
+                    setAnimationDirection('left');
+                    setUploadMode('files');
+                  }
+                }}
               >
                 <UploadCloud size={16} />
                 <span>Upload Files & Photos</span>
@@ -71,45 +83,57 @@ export const SenderUpload: React.FC = () => {
               <button
                 type="button"
                 className={`mode-tab touch-target ${uploadMode === 'text' ? 'active' : ''}`}
-                onClick={() => setUploadMode('text')}
+                onClick={() => {
+                  if (uploadMode !== 'text') {
+                    setAnimationDirection('right');
+                    setUploadMode('text');
+                  }
+                }}
               >
                 <FileCode size={16} />
                 <span>Drop Raw Text</span>
               </button>
             </div>
 
-            {/* Mode 1: File Dropzone & Queue */}
-            {uploadMode === 'files' && (
-              <div className="sender-files-layout">
-                <DropZone
-                  onFilesAdded={addFiles}
-                  onSwitchToText={() => setUploadMode('text')}
-                />
+            {/* Fluid Animated Content Panel */}
+            <div
+              key={uploadMode}
+              className={`fluid-panel ${animationDirection === 'right' ? 'fluid-slide-right' : 'fluid-slide-left'}`}
+            >
+              {/* Mode 1: File Dropzone & Queue */}
+              {uploadMode === 'files' ? (
+                <div className="sender-files-layout">
+                  <DropZone
+                    onFilesAdded={addFiles}
+                    onSwitchToText={() => {
+                      setAnimationDirection('right');
+                      setUploadMode('text');
+                    }}
+                  />
 
-                <UploadQueue
-                  files={selectedFiles}
+                  <UploadQueue
+                    files={selectedFiles}
+                    isUploading={isUploading}
+                    onRemoveFile={removeFile}
+                    onClearQueue={clearQueue}
+                    onUploadAll={uploadAllFiles}
+                  />
+                </div>
+              ) : (
+                /* Mode 2: Raw Text Drop */
+                <RawTextEditor
+                  textTitle={textTitle}
+                  onTextTitleChange={setTextTitle}
+                  rawText={rawText}
+                  onRawTextChange={setRawText}
                   isUploading={isUploading}
-                  onRemoveFile={removeFile}
-                  onClearQueue={clearQueue}
-                  onUploadAll={uploadAllFiles}
+                  deskTitle={deskTitle}
+                  onPasteClipboard={pasteClipboardText}
+                  onUploadRawText={uploadRawText}
+                  onAddTextToQueue={addTextToQueue}
                 />
-              </div>
-            )}
-
-            {/* Mode 2: Raw Text Drop */}
-            {uploadMode === 'text' && (
-              <RawTextEditor
-                textTitle={textTitle}
-                onTextTitleChange={setTextTitle}
-                rawText={rawText}
-                onRawTextChange={setRawText}
-                isUploading={isUploading}
-                deskTitle={deskTitle}
-                onPasteClipboard={pasteClipboardText}
-                onUploadRawText={uploadRawText}
-                onAddTextToQueue={addTextToQueue}
-              />
-            )}
+              )}
+            </div>
           </>
         )}
       </div>
